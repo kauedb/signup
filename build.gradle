@@ -1,0 +1,65 @@
+apply plugin: 'java'
+apply plugin: 'scala'
+apply plugin: 'groovy'
+apply plugin: 'idea'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+configurations {
+    groovy
+}
+
+dependencies {
+
+    // java dependencies
+    compile "org.slf4j:slf4j-api:1.7.5"
+    testCompile "org.testng:testng:6.8.1"
+
+    // groovy dependencies
+    compile "org.codehaus.groovy:groovy-all:2.3.3"
+    testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
+
+    // scala dependencies
+    compile "org.scala-lang:scala-library:2.11.1"
+    compile "org.scala-lang:scala-compiler:2.11.1"
+
+    compile "org.scalatest:scalatest_2.11:2.2.0"
+
+    // framework dependencies
+    compile 'org.springframework:spring-context:4.0.6.RELEASE'
+
+}
+
+test {
+
+    testLogging {
+        // set options for log level LIFECYCLE
+        events "failed"
+        exceptionFormat "short"
+
+        // set options for log level DEBUG
+        debug {
+            events "started", "skipped", "failed"
+            exceptionFormat "full"
+        }
+
+        // remove standard output/error logging from --info builds
+        // by assigning only 'failed' and 'skipped' events
+        info.events = ["failed", "skipped"]
+
+        displayGranularity = 2
+    }
+}
+
+task testng(type: Test) {
+    useTestNG() {
+        useDefaultListeners = true
+    }
+
+    reports.html.enabled = true
+}
+
+check.dependsOn testng
